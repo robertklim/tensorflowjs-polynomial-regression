@@ -1,9 +1,9 @@
 let xs = [];
 let ys = [];
 
-let a, b, c;
+let a, b, c, d;
 
-const learningRate = 0.1;
+const learningRate = 0.3;
 const optimizer = tf.train.sgd(learningRate);
 
 function setup() {
@@ -12,6 +12,7 @@ function setup() {
     a = tf.variable(tf.scalar(random(-1, 1)));
     b = tf.variable(tf.scalar(random(-1, 1)));
     c = tf.variable(tf.scalar(random(-1, 1)));
+    d = tf.variable(tf.scalar(random(-1, 1)));
 
 }
 
@@ -24,7 +25,9 @@ function predict(xs) {
     // y = mx + b
     // const ys = tfxs.mul(m).add(b);
     // y = ax^2 + bx + c
-    const ys = tfxs.square().mul(a).add(tfxs.mul(b)).add(c);
+    // const ys = tfxs.square().mul(a).add(tfxs.mul(b)).add(c);
+    // y = ax^3 + bx^2 + cx + d
+    const ys = tfxs.pow(tf.scalar(3)).mul(a).add(tfxs.square().mul(b)).add(tfxs.mul(c)).add(d);
     return ys;
 }
 
@@ -81,6 +84,6 @@ function draw() {
     }
     endShape();
 
-    console.log(tf.memory().numTensors);
+    // console.log(tf.memory().numTensors);
 
 }
