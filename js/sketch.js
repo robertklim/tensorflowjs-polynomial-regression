@@ -1,7 +1,7 @@
 let xs = [];
 let ys = [];
 
-let m, b;
+let a, b, c;
 
 const learningRate = 0.1;
 const optimizer = tf.train.sgd(learningRate);
@@ -9,8 +9,9 @@ const optimizer = tf.train.sgd(learningRate);
 function setup() {
     createCanvas(400, 400);
 
-    m = tf.variable(tf.scalar(random(1)));
+    a = tf.variable(tf.scalar(random(1)));
     b = tf.variable(tf.scalar(random(1)));
+    c = tf.variable(tf.scalar(random(1)));
 
 }
 
@@ -21,7 +22,9 @@ function loss(pred, labels) {
 function predict(xs) {
     const tfxs = tf.tensor1d(xs);
     // y = mx + b
-    const ys = tfxs.mul(m).add(b);
+    // const ys = tfxs.mul(m).add(b);
+    // y = ax^2 + bx + c
+    const ys = tfxs.square().mul(a).add(tfxs.mul(b)).add(c);
     return ys;
 }
 
