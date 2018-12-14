@@ -9,9 +9,9 @@ const optimizer = tf.train.sgd(learningRate);
 function setup() {
     createCanvas(400, 400);
 
-    a = tf.variable(tf.scalar(random(1)));
-    b = tf.variable(tf.scalar(random(1)));
-    c = tf.variable(tf.scalar(random(1)));
+    a = tf.variable(tf.scalar(random(-1, 1)));
+    b = tf.variable(tf.scalar(random(-1, 1)));
+    c = tf.variable(tf.scalar(random(-1, 1)));
 
 }
 
@@ -59,20 +59,28 @@ function draw() {
 
     // draw the line
     
-    const xvals = [-1, 1];
-    const yvals = tf.tidy(() => predict(xvals));
-    let lineY = yvals.dataSync();
+    // const xvals = [-1, 1];
+    const curveX = [];
+    for (let x = -1; x < 1.01; x+= 0.05) {
+        curveX.push(x);
+    }
+    const yvals = tf.tidy(() => predict(curveX));
+    
+    let curveY = yvals.dataSync();
     yvals.dispose();
 
-    let x1 = map(xvals[0], -1, 1, 0, width);
-    let x2 = map(xvals[1], -1, 1, 0, width);
-    
-    let y1 = map(lineY[0], -1, 1, height, 0);
-    let y2 = map(lineY[1], -1, 1, height, 0);
-    
+    // draw line
+    beginShape();
+    noFill();
+    stroke(0);
     strokeWeight(2);
-    line(x1, y1, x2, y2);
+    for (let i = 0; i < curveX.length; i++) {
+        let x = map(curveX[i], -1, 1, 0, width);
+        let y = map(curveY[i], -1, 1, height, 0);
+        vertex(x, y);
+    }
+    endShape();
 
-    // console.log(tf.memory().numTensors);
+    console.log(tf.memory().numTensors);
 
 }
