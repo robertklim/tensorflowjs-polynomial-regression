@@ -3,7 +3,9 @@ let ys = [];
 
 let a, b, c, d;
 
-const learningRate = 0.3;
+let addingPoints = false;
+
+const learningRate = 0.1;
 const optimizer = tf.train.sgd(learningRate);
 
 function setup() {
@@ -31,13 +33,21 @@ function predict(xs) {
     return ys;
 }
 
-function mousePressed() {
+function addPoints() {
     // normalize coordinates (values between 0-1)
     let x = map(mouseX, 0, width, -1, 1);
     let y = map(mouseY, 0, height, 1, -1);
-    
+
     xs.push(x);
     ys.push(y);
+}
+
+function mousePressed() {
+    addingPoints = true;
+}
+
+function mouseReleased() {
+    addingPoints = false;
 }
 
 function draw() {
@@ -45,12 +55,16 @@ function draw() {
     stroke(0);
     strokeWeight(6);
 
-    tf.tidy(() => {
-        if (xs.length > 0) {
-            const tfys = tf.tensor1d(ys);
-            optimizer.minimize(() => loss(predict(xs), tfys));
-        }
-    });
+    if (addingPoints) {
+        addPoints();
+    } else {
+        tf.tidy(() => {
+            if (xs.length > 0) {
+                const tfys = tf.tensor1d(ys);
+                optimizer.minimize(() => loss(predict(xs), tfys));
+            }
+        });
+    }
 
     for (let i = 0; i < xs.length; i++) {
         // reverse normalization (values between 0 - height and 0 - width)
