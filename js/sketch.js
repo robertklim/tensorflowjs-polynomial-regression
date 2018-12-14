@@ -27,8 +27,8 @@ function predict(xs) {
 
 function mousePressed() {
     // normalize coordinates (values between 0-1)
-    let x = map(mouseX, 0, width, 0, 1);
-    let y = map(mouseY, 0, height, 1, 0);
+    let x = map(mouseX, 0, width, -1, 1);
+    let y = map(mouseY, 0, height, 1, -1);
     
     xs.push(x);
     ys.push(y);
@@ -48,24 +48,24 @@ function draw() {
 
     for (let i = 0; i < xs.length; i++) {
         // reverse normalization (values between 0 - height and 0 - width)
-        let px = map(xs[i], 0, 1, 0, width);
-        let py = map(ys[i], 0, 1, height, 0);
+        let px = map(xs[i], -1, 1, 0, width);
+        let py = map(ys[i], -1, 1, height, 0);
         // draw a point
         point(px, py);
     }
 
     // draw the line
     
-    const xvals = [0, 1];
+    const xvals = [-1, 1];
     const yvals = tf.tidy(() => predict(xvals));
     let lineY = yvals.dataSync();
     yvals.dispose();
 
-    let x1 = map(xvals[0], 0, 1, 0, width);
-    let x2 = map(xvals[1], 0, 1, 0, width);
+    let x1 = map(xvals[0], -1, 1, 0, width);
+    let x2 = map(xvals[1], -1, 1, 0, width);
     
-    let y1 = map(lineY[0], 0, 1, height, 0);
-    let y2 = map(lineY[1], 0, 1, height, 0);
+    let y1 = map(lineY[0], -1, 1, height, 0);
+    let y2 = map(lineY[1], -1, 1, height, 0);
     
     strokeWeight(2);
     line(x1, y1, x2, y2);
