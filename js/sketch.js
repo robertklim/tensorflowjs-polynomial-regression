@@ -43,7 +43,9 @@ function addPoints() {
 }
 
 function mousePressed() {
-    addingPoints = true;
+    if (mouseX < width && mouseX > 0 && mouseY < height && mouseY > 0) {
+        addingPoints = true;
+    }
 }
 
 function mouseReleased() {
