@@ -8,6 +8,8 @@ let addingPoints = false;
 const learningRate = 0.1;
 const optimizer = tf.train.sgd(learningRate);
 
+const functionDegree = document.getElementById('function-degree');
+
 function setup() {
     createCanvas(400, 400);
 
@@ -22,14 +24,21 @@ function loss(pred, labels) {
     return pred.sub(labels).square().mean();
 }
 
-function predict(xs) {
+function predict(xs, fDegree = 3) {
     const tfxs = tf.tensor1d(xs);
-    // y = mx + b
-    // const ys = tfxs.mul(m).add(b);
+    let ys;
+    // y = ax + b
+    if (fDegree == 1) {
+        ys = tfxs.mul(a).add(b);
+    }
     // y = ax^2 + bx + c
-    // const ys = tfxs.square().mul(a).add(tfxs.mul(b)).add(c);
+    if (fDegree == 2) {
+        ys = tfxs.square().mul(a).add(tfxs.mul(b)).add(c);
+    }
     // y = ax^3 + bx^2 + cx + d
-    const ys = tfxs.pow(tf.scalar(3)).mul(a).add(tfxs.square().mul(b)).add(tfxs.mul(c)).add(d);
+    if (fDegree == 3) {
+        ys = tfxs.pow(tf.scalar(3)).mul(a).add(tfxs.square().mul(b)).add(tfxs.mul(c)).add(d);
+    }
     return ys;
 }
 
@@ -57,13 +66,15 @@ function draw() {
     stroke(0);
     strokeWeight(6);
 
+    let fDegree = functionDegree.options[functionDegree.selectedIndex].value;
+
     if (addingPoints) {
         addPoints();
     } else {
         tf.tidy(() => {
             if (xs.length > 0) {
                 const tfys = tf.tensor1d(ys);
-                optimizer.minimize(() => loss(predict(xs), tfys));
+                optimizer.minimize(() => loss(predict(xs, fDegree), tfys));
             }
         });
     }
@@ -83,7 +94,7 @@ function draw() {
     for (let x = -1; x < 1.01; x+= 0.05) {
         curveX.push(x);
     }
-    const yvals = tf.tidy(() => predict(curveX));
+    const yvals = tf.tidy(() => predict(curveX, fDegree));
     
     let curveY = yvals.dataSync();
     yvals.dispose();
