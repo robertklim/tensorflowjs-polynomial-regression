@@ -4,11 +4,14 @@ let ys = [];
 let a, b, c, d;
 
 let addingPoints = false;
+let lrChanged = false;
 
-const learningRate = 0.1;
-const optimizer = tf.train.sgd(learningRate);
+let learningRate = 0.1;
+let optimizer = tf.train.sgd(learningRate);
 
 const functionDegree = document.getElementById('function-degree');
+const learningRateInfo = document.getElementById('lr-info');
+const learningRateValue = document.getElementById('lr-value');
 
 function setup() {
     createCanvas(400, 400);
@@ -17,6 +20,15 @@ function setup() {
     b = tf.variable(tf.scalar(random(-1, 1)));
     c = tf.variable(tf.scalar(random(-1, 1)));
     d = tf.variable(tf.scalar(random(-1, 1)));
+
+    learningRateInfo.innerHTML = learningRate;
+    learningRateValue.value = learningRate;
+
+    learningRateValue.addEventListener('change', () => {
+        learningRate = learningRateValue.value;
+        learningRateInfo.innerHTML = learningRate;
+        lrChanged = true;
+    });
 
 }
 
@@ -66,7 +78,7 @@ function draw() {
     stroke(0);
     strokeWeight(6);
 
-    let fDegree = functionDegree.options[functionDegree.selectedIndex].value;
+    let fDegree = functionDegree.options[functionDegree.selectedIndex].value
 
     if (addingPoints) {
         addPoints();
@@ -74,6 +86,10 @@ function draw() {
         tf.tidy(() => {
             if (xs.length > 0) {
                 const tfys = tf.tensor1d(ys);
+                if (lrChanged) {
+                    optimizer.setLearningRate(learningRate);
+                    lrChanged = false;
+                }
                 optimizer.minimize(() => loss(predict(xs, fDegree), tfys));
             }
         });
